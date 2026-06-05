@@ -27,4 +27,31 @@ ActiveRecord::Schema.define(version: 2020_10_02_124236) do
     t.index ["rank", "page_id"], name: "index_pages_on_rank_and_page_id", unique: true
     t.index ["page_id"], name: "index_pages_on_resource_id"
   end
+
+  create_table "books", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "genres", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "book_id", null: false
+    t.bigint "genre_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "rank", collation: collation_by_db
+    t.index ["rank", "user_id", "genre_id"], name: "index_favorites_on_rank_and_user_id_and_genre_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+    t.index ["genre_id"], name: "index_favorites_on_genre_id"
+  end
 end

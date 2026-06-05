@@ -10,7 +10,7 @@ module Lexorank::Rankable
   module ClassMethods
     attr_reader :lexorank_ranking
 
-    def rank!(field: :rank, group_by: nil, advisory_lock: {})
+    def rank!(field: :rank, group_by: [], advisory_lock: {})
       @lexorank_ranking = Lexorank::Ranking.new(record_class: self, field: field, group_by: group_by, advisory_lock: advisory_lock)
       lexorank_ranking.validate!
 

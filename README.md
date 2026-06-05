@@ -131,13 +131,13 @@ end
 ## Class methods
 
 <details>
-<summary><a id="rank"></a><code>rank!(field: :rank, group_by: nil, advisory_lock: {})</code></summary>
+<summary><a id="rank"></a><code>rank!(field: :rank, group_by: [], advisory_lock: {})</code></summary>
 
 This is the entry point to use lexorank in your model.
 
 Options:
 * `field`: Allows you to pass a custom field which is being used to store the models rank. (defaults to `:rank`)
-* `group_by`: Makes it possible to split model ordering into groups by a specific column. [Learn more](#associations-and-grouping)
+* `group_by`: Makes it possible to split model ordering into groups by one or more columns. Accepts a single column/association name or an array of them. [Learn more](#associations-and-grouping)
 * `advisory_lock`: The advisory lock configuration. [Learn more](#locking)
 
 </details>
@@ -261,6 +261,26 @@ Retrieving data in a grouped manner is as simple as utilizing built-in ActiveRec
 ```ruby
 # This will return all paragraphs of the first page in the supplied order.
 Page.first.paragraphs.ranked
+```
+
+### Multiple grouping columns
+
+You can group by more than one column by passing an array to `group_by`. Association names and column names can be mixed freely:
+
+```ruby
+require 'lexorank/rankable'
+class Favorite < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :genre
+  belongs_to :book
+  rank!(group_by: [:user, :genre])
+end
+```
+
+In this example each user has an independent ranking of their favourite books per genre. The database index should cover all grouping columns:
+
+```ruby
+add_index :favorites, [:rank, :user_id, :genre_id], unique: true
 ```
 
 ## Locking

@@ -21,6 +21,10 @@ require "models/base"
 require "models/page"
 require "models/paragraph"
 require "models/grouped_paragraph"
+require "models/book"
+require "models/user"
+require "models/genre"
+require "models/favorite"
 
 class Minitest::Test
   include Shoulda::Context::DSL
@@ -96,5 +100,12 @@ class Minitest::Test
       clazz: clazz,
       create_with: { page: page }
     )
+  end
+
+  def create_sample_favorites(user, genre, count: 3)
+    favorites = []
+    count.times { favorites << Favorite.create!(user: user, genre: genre, book: Book.create!) }
+    favorites.each_with_index { |doc, i| doc.move_to!(i) }
+    favorites
   end
 end

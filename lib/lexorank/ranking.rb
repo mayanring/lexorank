@@ -8,7 +8,7 @@ class Lexorank::Ranking
   def initialize(record_class:, field:, group_by:, advisory_lock:)
     @record_class = record_class
     @field = field
-    @group_by = process_group_by_column_name(group_by)
+    @group_by = process_group_by_column_names(group_by)
     @advisory_lock_config = { enabled: record_class.respond_to?(:with_advisory_lock) }.merge(advisory_lock)
   end
 
@@ -39,7 +39,7 @@ class Lexorank::Ranking
 
     collection = record_class.ranked
     if group_by.present?
-      collection = collection.where("#{group_by}": instance.send(group_by))
+      collection = collection.where(group_by.index_with { |column_name| instance.send(column_name) })
     end
 
     # exceptions:
@@ -94,7 +94,8 @@ class Lexorank::Ranking
     else
       "#{record_class.table_name}_update_#{field}".tap do |name|
         if group_by.present?
-          name << "_group_#{instance.send(group_by)}"
+          group_values = group_by.map { |column_name| instance.send(column_name) }.join("_")
+          name << "_group_#{group_values}"
         end
       end
     end
@@ -106,12 +107,13 @@ class Lexorank::Ranking
 
   private
 
-  def process_group_by_column_name(name)
-    # This requires rank! to be after the specific association
-    if name && (association = record_class.reflect_on_association(name))
-      association.foreign_key.to_sym
-    else
-      name
+  def process_group_by_column_names(names)
+    Array(names).map do |column|
+      if (association = record_class.reflect_on_association(column))
+        association.foreign_key.to_sym
+      else
+        column
+      end
     end
   end
 end

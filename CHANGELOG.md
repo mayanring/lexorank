@@ -7,7 +7,13 @@ and this project tries to adhere to [Semantic Versioning](https://semver.org/spe
 
 ## Unreleased
 
-...
+### Added
+
+* Support for multiple `group_by` columns by passing an array of column or association names. For example: `rank!(group_by: [:user, :genre])`.
+
+### Changed
+
+* `lexorank_ranking.group_by` now always returns an array. Previously it returned a single symbol (e.g. `:page_id`) when one column was specified, or `nil` when none was specified. It now returns `[:page_id]` and `[]` respectively. This only affects code that reads the `group_by` attribute directly.
 
 ## [0.4.0] - 2024-09-05
 
