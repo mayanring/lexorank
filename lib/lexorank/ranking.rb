@@ -94,7 +94,7 @@ class Lexorank::Ranking
     else
       "#{record_class.table_name}_update_#{field}".tap do |name|
         if group_by.present?
-          group_values = group_by.map { |column_name| instance.send(column_name) }.join("_")
+          group_values = group_by.map { |column_name| "#{column_name}_#{instance.send(column_name)}" }.join("_")
           name << "_group_#{group_values}"
         end
       end

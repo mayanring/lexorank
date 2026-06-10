@@ -72,6 +72,16 @@ class AdvisoryLockTest < ActiveSupport::TestCase
     end
   end
 
+  should "include column names and values in lock name when group_by is present" do
+    user = User.create!
+    genre = Genre.create!
+    favorite = Favorite.new(user: user, genre: genre, book: Book.create!)
+
+    assert_advisory_locked_with Favorite, ["favorites_update_rank_group_user_id_#{user.id}_genre_id_#{genre.id}"] do
+      favorite.move_to_top!
+    end
+  end
+
   should "be able to overwrite advisory lock name" do
     class Page4 < Base
       self.table_name = "pages"
